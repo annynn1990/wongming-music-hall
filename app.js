@@ -1,5 +1,5 @@
 const DEFAULT=[{title:"天命所歸典禮曲",artist:"",youtube:"https://www.youtube.com/watch?v=nJFxOGmXo3k"}];
-const CLOUD="https://ai-avatar-bot-two.vercel.app/api/locale?shrine=2";
+const CLOUD="https://wongming-ai.vercel.app/api/locale?shrine=2";
 let songs=[],player=null,ready=false,current=-1,playing=false;
 const $=id=>document.getElementById(id);
 function vid(u){try{const x=new URL(u);return x.hostname.includes("youtu.be")?x.pathname.slice(1).split("/")[0]:x.searchParams.get("v")||((x.pathname.match(/\/embed\/([^/]+)/)||[])[1]||"")}catch{return""}}
