@@ -45,9 +45,9 @@ header{display:flex;justify-content:flex-start;align-items:flex-start;padding:2p
 .song-crawl-inner{position:absolute;left:0;right:0;top:0;bottom:auto;transform:translateY(var(--crawl-start,52vh));transform-origin:50% 100%;text-align:center;color:#e2c17b;text-shadow:0 2px 12px rgba(0,0,0,.85),0 0 16px rgba(226,193,123,.25);font-weight:600;letter-spacing:.08em;will-change:transform}
 .song-crawl.playing .song-crawl-inner{animation:songCrawl var(--crawl-duration,60s) linear infinite}
 .song-crawl:hover .song-crawl-inner{animation-play-state:paused}
-.song-crawl-title{font-size:32px;line-height:1.5;margin-bottom:14px}
-.song-crawl-english{font-family:Georgia,"Times New Roman",serif;font-size:20px;letter-spacing:.12em;color:#efd89b;margin-bottom:29px;text-transform:uppercase}
-.song-crawl-text{font-size:23px;line-height:2;text-align:center;white-space:pre-line}
+.song-crawl-title{font-size:30px;line-height:1.5;margin-bottom:14px}
+.song-crawl-english{font-family:Georgia,"Times New Roman",serif;font-size:18px;letter-spacing:.12em;color:#efd89b;margin-bottom:29px;text-transform:uppercase}
+.song-crawl-text{font-size:21px;line-height:2;text-align:center;white-space:pre-line}
 .song-crawl.is-paused .song-crawl-inner{animation-play-state:paused}
 @keyframes songCrawl{
   0%{transform:translateY(var(--crawl-start,52vh))}
