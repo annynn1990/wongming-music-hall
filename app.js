@@ -20,12 +20,11 @@ function vid(u){
   }catch{return""}
 }
 async function load(){
-  try{
-    const x=await readCloud();
-    songs=Array.isArray(x)&&x.length?x:[...DEFAULT];
-  }catch{
-    songs=[...DEFAULT];
+  const x=await readCloud();
+  if(!Array.isArray(x)){
+    throw new Error("CLOUD_DATA_INVALID");
   }
+  songs=x;
 }
 function render(){
   $("count").textContent=songs.length+" 首";
@@ -247,12 +246,23 @@ $("manageReset").onclick=async()=>{
   await saveManage();
 };
 (async()=>{
-  await load();
-  current=songs.length?0:-1;
-  render();
-  if(current>=0){
-    $("title").textContent=songs[0].title;
-    $("artist").textContent=songs[0].artist||"";
+  try{
+    await load();
+    current=songs.length?0:-1;
+    render();
+    if(current>=0){
+      $("title").textContent=songs[0].title;
+      $("artist").textContent=songs[0].artist||"";
+    }
+  }catch(error){
+    songs=[];
+    current=-1;
+    render();
+    $("title").textContent="雲端曲目資料讀取失敗";
+    $("artist").textContent="請稍後重新整理";
+    $("soundNote").textContent="目前未使用預設資料，以免覆蓋雲端記憶";
+    notifyEmbed("paused");
+    console.error("Royal Music Hall cloud load failed:",error);
   }
   const x=document.createElement("script");
   x.src="https://www.youtube.com/iframe_api";
