@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>皇家音樂廳</title><link rel="stylesheet" href="style.css?v=7"></head>
+<title>皇家音樂廳</title><link rel="stylesheet" href="style.css?v=8"></head>
 <body>
 <div class="bg"></div>
 <main>
@@ -9,22 +9,84 @@
   <div class="brand-block"><div class="brand-cn">皇家音樂廳</div><div class="brand-en">Royal Concert Hall</div></div>
   <button class="admin-link" id="manageOpen" type="button">曲目管理</button>
 </header>
+
 <section class="shell">
-<aside><div class="heading"><b>演奏曲目</b><span id="count">0 首</span></div><div id="playlist"></div></aside>
-<section class="stage">
-<div class="performance-title"><div id="title">天命所歸典禮曲</div><span id="artist"></span></div>
-<button id="playButton" class="play-button" aria-label="播放"><span class="play-icon">▶</span></button>
-<div class="performance-visual" aria-hidden="true"><div class="equalizer"></div><div class="particle-field" id="particleField"></div></div>
-<div id="player" aria-hidden="true"></div>
-<div class="sound-note" id="soundNote">按中央播放鍵開始演奏</div>
-</section></section>
+  <aside>
+    <div class="heading"><b>演奏曲目</b><span id="count">0 首</span></div>
+    <div id="playlist"></div>
+  </aside>
+
+  <section class="stage">
+    <div class="performance-title">
+      <div id="title">天命所歸典禮曲</div>
+      <span id="englishTitle"></span>
+    </div>
+
+    <button id="playButton" class="play-button" aria-label="播放">
+      <span class="play-icon">▶</span>
+    </button>
+
+    <div class="performance-visual" aria-hidden="true">
+      <div class="equalizer"></div>
+      <div class="particle-field" id="particleField"></div>
+    </div>
+
+    <div class="song-crawl" id="songCrawl" aria-live="polite">
+      <div class="song-crawl-inner">
+        <div class="song-crawl-title" id="songCrawlTitle"></div>
+        <div class="song-crawl-english" id="songCrawlEnglish"></div>
+        <div class="song-crawl-text" id="songCrawlText"></div>
+      </div>
+    </div>
+
+    <div id="player" aria-hidden="true"></div>
+    <div class="sound-note" id="soundNote">按中央播放鍵開始演奏</div>
+  </section>
+</section>
+
 <footer>© 黃名帝國</footer>
 </main>
+
 <div id="manageModal" class="manage-modal" hidden>
-<div class="manage-panel">
-<button id="manageClose" class="manage-close" type="button" aria-label="關閉">×</button>
-<div id="manageLock"><div class="manage-kicker">ROYAL CONCERT HALL</div><h2>曲目管理</h2><p>輸入管理密碼</p><input id="managePw" type="password" inputmode="numeric" placeholder="管理密碼"><button id="manageUnlock" class="manage-action" type="button">進入編輯</button><div id="manageErr"></div></div>
-<div id="manageEditor" hidden><h2>曲目管理</h2><label>曲名</label><input id="manageTitleInput"><label>演出者／分類</label><input id="manageArtistInput"><label>YouTube 網址</label><input id="manageUrlInput"><div class="manage-row"><button id="manageAdd" class="manage-action" type="button">加入曲目</button><button id="manageReset" class="manage-action" type="button">恢復預設</button></div><div id="manageStatus">尚未連線</div><div id="manageList"></div></div>
-</div></div>
-<script src="app.js?v=7"></script>
-</body></html>
+  <div class="manage-panel">
+    <button id="manageClose" class="manage-close" type="button" aria-label="關閉">×</button>
+
+    <div id="manageLock">
+      <div class="manage-kicker">ROYAL CONCERT HALL</div>
+      <h2>曲目管理</h2>
+      <p>輸入管理密碼</p>
+      <input id="managePw" type="password" inputmode="numeric" placeholder="管理密碼">
+      <button id="manageUnlock" class="manage-action" type="button">進入編輯</button>
+      <div id="manageErr"></div>
+    </div>
+
+    <div id="manageEditor" hidden>
+      <h2>曲目管理</h2>
+
+      <label>曲名</label>
+      <input id="manageTitleInput" placeholder="中文曲名">
+
+      <label>英文曲名</label>
+      <input id="manageEnglishInput" placeholder="English Title">
+
+      <label>歌曲介紹</label>
+      <textarea id="manageIntroInput" rows="5" placeholder="介紹這首歌曲的背景、用途、創作概念或演奏特色。"></textarea>
+
+      <label>YouTube 網址</label>
+      <input id="manageUrlInput" placeholder="https://www.youtube.com/watch?v=...">
+
+      <div class="manage-row">
+        <button id="manageAdd" class="manage-action" type="button">加入曲目</button>
+        <button id="manageReset" class="manage-action" type="button">恢復預設</button>
+      </div>
+
+      <div class="manage-hint">可直接拖曳曲目調整演奏順序；修改會同步保存到雲端。</div>
+      <div id="manageStatus">尚未連線</div>
+      <div id="manageList"></div>
+    </div>
+  </div>
+</div>
+
+<script src="app.js?v=8"></script>
+</body>
+</html>
