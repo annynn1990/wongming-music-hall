@@ -77,7 +77,7 @@ function prepareSongCrawl(){
     const start=boxHeight;
     const end=-(contentHeight+boxHeight*1.05);
     const distance=Math.abs(end-start);
-    const seconds=Math.max(48,Math.min(210,distance/48));
+    const seconds=Math.max(60,Math.min(300,distance/32));
 
     box.style.setProperty("--crawl-start",start+"px");
     box.style.setProperty("--crawl-end",end+"px");
