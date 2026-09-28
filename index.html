@@ -5,19 +5,20 @@
 <body>
 <div class="bg"></div>
 <main>
-<header><div><small>WONGMING EMPIRE · ROYAL MUSIC HALL</small><h1>皇家音樂廳</h1></div><a href="admin.html">曲目管理</a></header>
+<header><div><small>WONGMING EMPIRE</small><h1>皇家</h1></div><a class="admin-link" href="admin.html" aria-label="曲目管理">•••</a></header>
 <section class="shell">
 <aside><div class="heading"><b>演奏曲目</b><span id="count">0 首</span></div><div id="playlist"></div></aside>
 <section class="stage">
-<div class="soundstage" aria-hidden="true">
-  <div class="sound-glow"></div><div class="sound-ripple r1"></div><div class="sound-ripple r2"></div><div class="sound-ripple r3"></div>
-  <div class="note-field" id="noteField"></div>
+<div class="performance-title"><div id="title">天命所歸典禮曲</div><span id="artist"></span></div>
+<button id="playButton" class="play-button" aria-label="播放"><span class="play-icon">▶</span></button>
+<div class="performance-visual" id="performanceVisual" aria-hidden="true">
+  <div class="equalizer"></div>
+  <div class="particle-field" id="particleField"></div>
 </div>
-<div class="performance-title"><small>ROYAL PERFORMANCE</small><div id="title">天命所歸典禮曲</div><span id="artist">皇家音樂廳</span></div>
 <div id="player" aria-hidden="true"></div>
-<div class="sound-note" id="soundNote">點選曲目開始演奏</div>
+<div class="sound-note" id="soundNote">按中央播放鍵開始演奏</div>
 </section></section>
-<footer>© 黃名帝國 · 皇家音樂廳</footer>
+<footer>© 黃名帝國</footer>
 </main>
 <script src="app.js"></script>
 </body></html>
