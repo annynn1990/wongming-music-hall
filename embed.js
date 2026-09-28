@@ -41,7 +41,7 @@
   var frame=document.createElement('div');
   frame.style.cssText=[
     'position:relative','box-sizing:border-box',
-    'width:calc(100vw - 24px)','height:calc(100dvh - 24px)',
+    'width:80vw','height:80vh',
     'min-width:0','min-height:0','max-width:1800px','max-height:1200px',
     'overflow:hidden','background:#080403',
     'border:1px solid rgba(226,193,123,.62)',
@@ -84,14 +84,14 @@
     '#wongming-royal-music-hall-root .wm-closing{background:rgba(0,0,0,0)!important;backdrop-filter:blur(0)!important}',
     '#wongming-royal-music-hall-root .wm-closing .wm-frame{opacity:0!important;transform:translateY(18px) scale(.9)!important}',
     '#wongming-royal-music-hall-root .wm-icon-hidden{opacity:0!important;pointer-events:none!important;transform:translate(-22px,-50%)!important}',
-    '#wongming-royal-music-hall-root .wm-icon-show{opacity:1!important;pointer-events:auto!important;transform:translate(0,-50%)!important}',
-    '@media(max-width:760px){#wongming-royal-music-hall-root .wm-frame{width:calc(100vw - 10px)!important;height:calc(100dvh - 10px)!important}#wongming-royal-music-hall-root .wm-minimize{top:8px!important;right:8px!important;width:38px!important;height:38px!important}}'
+    '#wongming-royal-music-hall-root .wm-icon-show{opacity:1!important;pointer-events:auto!important;transform:translate(0,-50%)!important}',\n    '#wongming-royal-music-hall-root .wm-playing{font-size:30px!important}',\n    '#wongming-royal-music-hall-root .wm-paused{font-size:34px!important}',
+    '@media(max-width:760px){#wongming-royal-music-hall-root .wm-frame{width:80vw!important;height:80vh!important}#wongming-royal-music-hall-root .wm-minimize{top:8px!important;right:8px!important;width:38px!important;height:38px!important}}'
   ].join('');
 
   frame.className='wm-frame';
   minimize.className='wm-minimize';
 
-  var isOpen=false;
+  var isOpen=false;\n  var musicState='paused';
   var closeTimer=null;
 
   function openHall(){
@@ -128,8 +128,8 @@
     },460);
   }
 
-  icon.onclick=openHall;
-  minimize.onclick=minimizeHall;
+  function updateMusicButton(state){\n    musicState=state;\n    if(state==='playing'){\n      icon.textContent='Ⅱ';\n      icon.classList.add('wm-playing');\n      icon.classList.remove('wm-paused');\n      icon.setAttribute('aria-label','正在播放，點擊開啟皇家音樂廳');\n    }else{\n      icon.textContent='▶';\n      icon.classList.add('wm-paused');\n      icon.classList.remove('wm-playing');\n      icon.setAttribute('aria-label','音樂已暫停，點擊開啟皇家音樂廳');\n    }\n  }\n\n  window.addEventListener('message',function(event){\n    if(!event.data || event.data.type!=='wongming-royal-music-hall') return;\n    if(event.data.state==='playing') updateMusicButton('playing');\n    if(event.data.state==='paused' || event.data.state==='stopped') updateMusicButton('paused');\n  });\n\n  icon.onclick=openHall;
+  minimize.onclick=minimizeHall;\n  updateMusicButton('paused');
   veil.addEventListener('click',function(event){
     if(event.target===veil) minimizeHall();
   });
