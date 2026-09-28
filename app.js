@@ -167,8 +167,9 @@ $("playButton").onclick=()=>{
   if(!songs.length) return;
 
   if(!ready){
+    pendingControl="play";
     window.pending=vid(songs[current>=0?current:0]?.youtube||"");
-    make();
+    if(window.YT&&YT.Player) make();
     return;
   }
 
@@ -182,7 +183,7 @@ function handleControl(action){
   if(!ready){
     pendingControl=action||"toggle";
     window.pending=vid(songs[current>=0?current:0]?.youtube||"");
-    make();
+    if(window.YT&&YT.Player) make();
     return;
   }
 
@@ -212,17 +213,21 @@ function make(){
     events:{
       onReady:e=>{
         ready=true;
-        e.target.loadVideoById(id);
         const action=pendingControl;
         pendingControl=null;
 
         if(action==="pause"){
-          e.target.pauseVideo();
+          e.target.cueVideoById(id);
           setPlaying(false);
-        }else if(action==="play"||action==="toggle"||!action){
+        }else if(action==="play"||action==="toggle"){
+          e.target.loadVideoById(id);
           e.target.playVideo();
           setPlaying(true);
+        }else{
+          e.target.cueVideoById(id);
+          setPlaying(false);
         }
+        notifyEmbed("ready");
       },
       onStateChange:e=>{
         if(e.data===YT.PlayerState.PLAYING) setPlaying(true);
@@ -240,7 +245,9 @@ function make(){
   });
 }
 
-window.onYouTubeIframeAPIReady=make;
+window.onYouTubeIframeAPIReady=()=>{
+  if(pendingControl) make();
+};
 
 const eq=document.querySelector(".equalizer");
 for(let i=0;i<52;i++){
