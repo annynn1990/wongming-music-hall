@@ -20,7 +20,7 @@ async function readCloud(){
   return JSON.parse(new TextDecoder().decode(bytes));
 }
 
-let songs=[],player=null,ready=false,current=-1,playing=false,pendingControl=null,dragIndex=-1;
+let songs=[],player=null,ready=false,current=-1,playing=false,pendingControl=null,dragIndex=-1,editingIndex=-1;
 
 const $=id=>document.getElementById(id);
 
@@ -310,8 +310,16 @@ function renderManage(){
     info.appendChild(en);
     info.appendChild(url);
 
-    const actions=document.createElement("div");
+      const actions=document.createElement("div");
     actions.className="manage-song-actions";
+
+    const edit=document.createElement("button");
+    edit.type="button";
+    edit.textContent="編輯";
+    edit.title="編輯這首歌曲";
+    edit.onclick=()=>{
+      startEditSong(i);
+    };
 
     const up=document.createElement("button");
     up.type="button";
@@ -349,7 +357,7 @@ function renderManage(){
       await saveManage();
     };
 
-    actions.append(up,down,del);
+    actions.append(edit,up,down,del);
     d.append(drag,info,actions);
 
     d.addEventListener("dragstart",()=>{
@@ -391,6 +399,55 @@ function renderManage(){
 
     list.appendChild(d);
   });
+}
+
+function clearEditForm(){
+  editingIndex=-1;
+  $("manageTitleInput").value="";
+  $("manageEnglishInput").value="";
+  $("manageIntroInput").value="";
+  $("manageUrlInput").value="";
+  $("manageAdd").hidden=false;
+  $("manageSaveEdit").hidden=true;
+  $("manageCancelEdit").hidden=true;
+}
+
+function startEditSong(i){
+  const s=songs[i];
+  if(!s)return;
+  editingIndex=i;
+  $("manageTitleInput").value=s.title||"";
+  $("manageEnglishInput").value=englishOf(s);
+  $("manageIntroInput").value=introOf(s);
+  $("manageUrlInput").value=s.youtube||"";
+  $("manageAdd").hidden=true;
+  $("manageSaveEdit").hidden=false;
+  $("manageCancelEdit").hidden=false;
+  $("manageTitleInput").focus();
+  $("manageStatus").textContent="正在編輯第 "+(i+1)+" 首曲目";
+}
+
+async function saveEditedSong(){
+  if(editingIndex<0||!songs[editingIndex])return;
+
+  const title=$("manageTitleInput").value.trim();
+  const englishTitle=$("manageEnglishInput").value.trim();
+  const intro=$("manageIntroInput").value.trim();
+  const youtube=$("manageUrlInput").value.trim();
+
+  if(!title||!youtube){
+    return alert("請填寫曲名與 YouTube 網址");
+  }
+
+  songs[editingIndex]={
+    title,
+    englishTitle,
+    intro,
+    youtube
+  };
+
+  await saveManage();
+  clearEditForm();
 }
 
 async function saveManage(){
@@ -443,11 +500,13 @@ $("manageAdd").onclick=async()=>{
   });
 
   await saveManage();
+  clearEditForm();
+};
 
-  $("manageTitleInput").value="";
-  $("manageEnglishInput").value="";
-  $("manageIntroInput").value="";
-  $("manageUrlInput").value="";
+$("manageSaveEdit").onclick=saveEditedSong;
+$("manageCancelEdit").onclick=()=>{
+  clearEditForm();
+  $("manageStatus").textContent="已取消修改";
 };
 
 $("manageReset").onclick=async()=>{
