@@ -66,6 +66,29 @@ function updatePerformanceText(s){
   $("englishTitle").textContent=englishOf(s);
 }
 
+function prepareSongCrawl(){
+  const box=$("songCrawl");
+  const inner=box.querySelector(".song-crawl-inner");
+  if(!box.classList.contains("playing")||!inner)return;
+
+  requestAnimationFrame(()=>{
+    const boxHeight=Math.max(box.clientHeight,1);
+    const contentHeight=Math.max(inner.scrollHeight,1);
+    const start=boxHeight;
+    const end=-(contentHeight+boxHeight*0.08);
+    const distance=Math.abs(end-start);
+    const seconds=Math.max(42,Math.min(180,distance/48));
+
+    box.style.setProperty("--crawl-start",start+"px");
+    box.style.setProperty("--crawl-end",end+"px");
+    box.style.setProperty("--crawl-duration",seconds+"s");
+
+    inner.style.animation="none";
+    void inner.offsetWidth;
+    inner.style.animation="";
+  });
+}
+
 function updateSongCrawl(s){
   const box=$("songCrawl");
   $("songCrawlTitle").textContent=s?.title||"";
@@ -75,6 +98,7 @@ function updateSongCrawl(s){
   void box.offsetWidth;
   if(playing&&introOf(s)){
     box.classList.add("playing");
+    prepareSongCrawl();
   }
 }
 
