@@ -42,19 +42,19 @@ header{display:flex;justify-content:flex-start;align-items:flex-start;padding:2p
 
 .song-crawl{position:fixed;right:5vw;top:40vh;width:min(390px,32vw);height:52vh;z-index:6;overflow:hidden;pointer-events:auto;display:none;perspective:600px;mask-image:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,.7) 12%,#000 24%,#000 80%,transparent 100%);cursor:default}
 .song-crawl.playing{display:block}
-.song-crawl-inner{position:absolute;left:0;right:0;top:100%;bottom:auto;transform:rotateX(22deg);transform-origin:50% 100%;text-align:center;color:#e2c17b;text-shadow:0 2px 12px rgba(0,0,0,.85),0 0 16px rgba(226,193,123,.25);font-weight:600;letter-spacing:.08em;will-change:top,transform}
-.song-crawl.playing .song-crawl-inner{animation:songCrawl 34s linear infinite}
+.song-crawl-inner{position:absolute;left:0;right:0;top:0;bottom:auto;transform:rotateX(22deg) translateY(var(--crawl-start,52vh));transform-origin:50% 100%;text-align:center;color:#e2c17b;text-shadow:0 2px 12px rgba(0,0,0,.85),0 0 16px rgba(226,193,123,.25);font-weight:600;letter-spacing:.08em;will-change:transform}
+.song-crawl.playing .song-crawl-inner{animation:songCrawl var(--crawl-duration,60s) linear infinite}
 .song-crawl:hover .song-crawl-inner{animation-play-state:paused}
-.song-crawl-title{font-size:32px;line-height:1.5;margin-bottom:14px;transition:font-size .18s ease}
-.song-crawl-english{font-family:Georgia,"Times New Roman",serif;font-size:20px;letter-spacing:.12em;color:#efd89b;margin-bottom:29px;text-transform:uppercase;transition:font-size .18s ease}
-.song-crawl-text{font-size:23px;line-height:2;text-align:center;white-space:pre-line;transition:font-size .18s ease}
-.song-crawl:hover .song-crawl-title{font-size:32px}
-.song-crawl:hover .song-crawl-english{font-size:20px}
-.song-crawl:hover .song-crawl-text{font-size:23px}
+.song-crawl-title{font-size:34px;line-height:1.5;margin-bottom:14px;transition:font-size .18s ease}
+.song-crawl-english{font-family:Georgia,"Times New Roman",serif;font-size:22px;letter-spacing:.12em;color:#efd89b;margin-bottom:29px;text-transform:uppercase;transition:font-size .18s ease}
+.song-crawl-text{font-size:25px;line-height:2;text-align:center;white-space:pre-line;transition:font-size .18s ease}
+.song-crawl:hover .song-crawl-title{font-size:34px}
+.song-crawl:hover .song-crawl-english{font-size:22px}
+.song-crawl:hover .song-crawl-text{font-size:25px}
 .song-crawl.is-paused .song-crawl-inner{animation-play-state:paused}
 @keyframes songCrawl{
-  0%{top:100%;transform:rotateX(22deg) translateY(0) scale(1.08)}
-  100%{top:-120%;transform:rotateX(22deg) translateY(0) scale(.92)}
+  0%{transform:rotateX(22deg) translateY(var(--crawl-start,52vh)) scale(1.08)}
+  100%{transform:rotateX(22deg) translateY(var(--crawl-end,-120%)) scale(.92)}
 }
 
 footer{padding:5px 0;color:#f5eadc77;font-size:9px;text-align:right}
