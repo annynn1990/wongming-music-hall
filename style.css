@@ -45,12 +45,12 @@ header{display:flex;justify-content:flex-start;align-items:flex-start;padding:2p
 .song-crawl-inner{position:absolute;left:0;right:0;top:100%;bottom:auto;transform:rotateX(22deg);transform-origin:50% 100%;text-align:center;color:#e2c17b;text-shadow:0 2px 12px rgba(0,0,0,.85),0 0 16px rgba(226,193,123,.25);font-weight:600;letter-spacing:.08em;will-change:top,transform}
 .song-crawl.playing .song-crawl-inner{animation:songCrawl 34s linear infinite}
 .song-crawl:hover .song-crawl-inner{animation-play-state:paused}
-.song-crawl-title{font-size:31px;line-height:1.5;margin-bottom:14px;transition:font-size .18s ease}
-.song-crawl-english{font-family:Georgia,"Times New Roman",serif;font-size:19px;letter-spacing:.12em;color:#efd89b;margin-bottom:29px;text-transform:uppercase;transition:font-size .18s ease}
-.song-crawl-text{font-size:22px;line-height:2;text-align:center;white-space:pre-line;transition:font-size .18s ease}
-.song-crawl:hover .song-crawl-title{font-size:36px}
-.song-crawl:hover .song-crawl-english{font-size:22px}
-.song-crawl:hover .song-crawl-text{font-size:25px}
+.song-crawl-title{font-size:32px;line-height:1.5;margin-bottom:14px;transition:font-size .18s ease}
+.song-crawl-english{font-family:Georgia,"Times New Roman",serif;font-size:20px;letter-spacing:.12em;color:#efd89b;margin-bottom:29px;text-transform:uppercase;transition:font-size .18s ease}
+.song-crawl-text{font-size:23px;line-height:2;text-align:center;white-space:pre-line;transition:font-size .18s ease}
+.song-crawl:hover .song-crawl-title{font-size:32px}
+.song-crawl:hover .song-crawl-english{font-size:20px}
+.song-crawl:hover .song-crawl-text{font-size:23px}
 .song-crawl.is-paused .song-crawl-inner{animation-play-state:paused}
 @keyframes songCrawl{
   0%{top:100%;transform:rotateX(22deg) translateY(0) scale(1.08)}
