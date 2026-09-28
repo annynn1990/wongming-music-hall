@@ -71,14 +71,35 @@ function updateSongCrawl(s){
   $("songCrawlTitle").textContent=s?.title||"";
   $("songCrawlEnglish").textContent=englishOf(s);
   $("songCrawlText").textContent=introOf(s);
-  box.classList.remove("playing");
+  box.classList.remove("playing","is-paused");
   void box.offsetWidth;
-  if(playing&&introOf(s)) box.classList.add("playing");
+  if(playing&&introOf(s)){
+    box.classList.add("playing");
+  }
 }
 
 function stopSongCrawl(){
   $("songCrawl").classList.remove("playing");
+  $("songCrawl").classList.remove("is-paused");
 }
+
+function setSongCrawlPaused(paused){
+  const box=$("songCrawl");
+  if(!box.classList.contains("playing")) return;
+  box.classList.toggle("is-paused",!!paused);
+}
+
+$("songCrawl").addEventListener("pointerdown",()=>{
+  setSongCrawlPaused(true);
+});
+
+window.addEventListener("pointerup",()=>{
+  setSongCrawlPaused(false);
+});
+
+window.addEventListener("pointercancel",()=>{
+  setSongCrawlPaused(false);
+});
 
 function notifyEmbed(state){
   try{
