@@ -9,24 +9,252 @@ async function readCloud(){
   const bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));
   return JSON.parse(new TextDecoder().decode(bytes));
 }
-let songs=[],player=null,ready=false,current=-1,playing=false;
+let songs=[],player=null,ready=false,current=-1,playing=false,pendingControl=null;
 const $=id=>document.getElementById(id);
-function vid(u){try{const x=new URL(u);return x.hostname.includes("youtu.be")?x.pathname.slice(1).split("/")[0]:x.searchParams.get("v")||((x.pathname.match(/\/embed\/([^/]+)/)||[])[1]||"")}catch{return""}}
-async function load(){try{const x=await readCloud();songs=Array.isArray(x)&&x.length?x:[...DEFAULT]}catch{songs=[...DEFAULT]}}
-function render(){ $("count").textContent=songs.length+" 首";$("playlist").innerHTML="";songs.forEach((s,i)=>{const b=document.createElement("button");b.className="track "+(i===current?"active":"");b.innerHTML='<img src="https://i.ytimg.com/vi/'+encodeURIComponent(vid(s.youtube))+'/hqdefault.jpg"><span><div class="track-title"></div><div class="track-meta"></div></span>';b.querySelector(".track-title").textContent=s.title;b.querySelector(".track-meta").textContent=s.artist||"";b.onclick=()=>play(i);$("playlist").appendChild(b)})}
-function notifyEmbed(state){try{if(window.parent&&window.parent!==window){window.parent.postMessage({type:"wongming-royal-music-hall",state:state},"*")}}catch{}}\nfunction setPlaying(v){playing=v;document.body.classList.toggle("playing",v);$("playButton").classList.toggle("playing",v);$("soundNote").textContent=v?"♪ 正在演奏":"按中央播放鍵開始演奏";notifyEmbed(v?"playing":"paused")}
-function play(i){const s=songs[i],id=vid(s.youtube);if(!id)return;current=i;$("title").textContent=s.title;$("artist").textContent=s.artist||"";render();window.pending=id;if(ready){player.loadVideoById(id);player.playVideo();setPlaying(true)}}
-$("playButton").onclick=()=>{if(!ready){window.pending=vid(songs[current>=0?current:0]?.youtube||"");make();return}if(playing)player.pauseVideo();else player.playVideo()};
-function make(){if(player)return;const id=window.pending||vid(songs[0]?.youtube||"");if(!id)return;player=new YT.Player("player",{videoId:id,playerVars:{playsinline:1,controls:0,rel:0,modestbranding:1},events:{onReady:e=>{ready=true;e.target.loadVideoById(id);e.target.playVideo();setPlaying(true)},onStateChange:e=>{if(e.data===YT.PlayerState.PLAYING)setPlaying(true);if(e.data===YT.PlayerState.PAUSED)setPlaying(false);if(e.data===YT.PlayerState.ENDED){playing=false;document.body.classList.remove("playing");$("playButton").classList.remove("playing");$("soundNote").textContent="按中央播放鍵開始演奏";notifyEmbed("stopped")}}}})}
+function vid(u){
+  try{
+    const x=new URL(u);
+    return x.hostname.includes("youtu.be")
+      ?x.pathname.slice(1).split("/")[0]
+      :x.searchParams.get("v")||((x.pathname.match(/\/embed\/([^/]+)/)||[])[1]||"");
+  }catch{return""}
+}
+async function load(){
+  try{
+    const x=await readCloud();
+    songs=Array.isArray(x)&&x.length?x:[...DEFAULT];
+  }catch{
+    songs=[...DEFAULT];
+  }
+}
+function render(){
+  $("count").textContent=songs.length+" 首";
+  $("playlist").innerHTML="";
+  songs.forEach((s,i)=>{
+    const b=document.createElement("button");
+    b.className="track "+(i===current?"active":"");
+    b.innerHTML='<img src="https://i.ytimg.com/vi/'+encodeURIComponent(vid(s.youtube))+'/hqdefault.jpg"><span><div class="track-title"></div><div class="track-meta"></div></span>';
+    b.querySelector(".track-title").textContent=s.title;
+    b.querySelector(".track-meta").textContent=s.artist||"";
+    b.onclick=()=>play(i);
+    $("playlist").appendChild(b);
+  });
+}
+function notifyEmbed(state){
+  try{
+    if(window.parent&&window.parent!==window){
+      window.parent.postMessage(
+        {type:"wongming-royal-music-hall",state:state},
+        "*"
+      );
+    }
+  }catch{}
+}
+function setPlaying(v){
+  playing=v;
+  document.body.classList.toggle("playing",v);
+  $("playButton").classList.toggle("playing",v);
+  $("soundNote").textContent=v?"♪ 正在演奏":"按中央播放鍵開始演奏";
+  notifyEmbed(v?"playing":"paused");
+}
+function play(i){
+  const s=songs[i],id=vid(s.youtube);
+  if(!id)return;
+  current=i;
+  $("title").textContent=s.title;
+  $("artist").textContent=s.artist||"";
+  render();
+  window.pending=id;
+  if(ready){
+    player.loadVideoById(id);
+    player.playVideo();
+    setPlaying(true);
+  }
+}
+$("playButton").onclick=()=>{
+  if(!ready){
+    window.pending=vid(songs[current>=0?current:0]?.youtube||"");
+    make();
+    return;
+  }
+  if(playing)player.pauseVideo();
+  else player.playVideo();
+};
+function handleControl(action){
+  if(!ready){
+    pendingControl=action||"toggle";
+    window.pending=vid(songs[current>=0?current:0]?.youtube||"");
+    make();
+    return;
+  }
+  if(action==="play"){
+    player.playVideo();
+  }else if(action==="pause"){
+    player.pauseVideo();
+  }else if(action==="toggle"){
+    if(playing)player.pauseVideo();
+    else player.playVideo();
+  }
+}
+window.addEventListener("message",event=>{
+  if(event.source!==window.parent)return;
+  if(!event.data||event.data.type!=="wongming-royal-music-hall-control")return;
+  handleControl(event.data.action||"toggle");
+});
+function make(){
+  if(player)return;
+  const id=window.pending||vid(songs[0]?.youtube||"");
+  if(!id)return;
+  player=new YT.Player("player",{
+    videoId:id,
+    playerVars:{playsinline:1,controls:0,rel:0,modestbranding:1},
+    events:{
+      onReady:e=>{
+        ready=true;
+        e.target.loadVideoById(id);
+        const action=pendingControl;
+        pendingControl=null;
+        if(action==="pause"){
+          e.target.pauseVideo();
+          setPlaying(false);
+        }else if(action==="play"||action==="toggle"||!action){
+          e.target.playVideo();
+          setPlaying(true);
+        }
+      },
+      onStateChange:e=>{
+        if(e.data===YT.PlayerState.PLAYING)setPlaying(true);
+        if(e.data===YT.PlayerState.PAUSED)setPlaying(false);
+        if(e.data===YT.PlayerState.ENDED){
+          playing=false;
+          document.body.classList.remove("playing");
+          $("playButton").classList.remove("playing");
+          $("soundNote").textContent="按中央播放鍵開始演奏";
+          notifyEmbed("stopped");
+        }
+      }
+    }
+  });
+}
 window.onYouTubeIframeAPIReady=make;
-const eq=document.querySelector(".equalizer");for(let i=0;i<52;i++){const e=document.createElement("span");e.style.setProperty("--h",(20+Math.random()*115)+"px");e.style.setProperty("--speed",(0.28+Math.random()*.58)+"s");e.style.setProperty("--delay",(-Math.random()*1.2)+"s");eq.appendChild(e)}
-const pf=document.querySelector("#particleField");for(let i=0;i<30;i++){const e=document.createElement("i");e.className="particle";e.style.left=(8+Math.random()*84)+"%";e.style.top=(45+Math.random()*45)+"%";e.style.setProperty("--speed",(1.4+Math.random()*2)+"s");e.style.setProperty("--delay",(-Math.random()*3)+"s");pf.appendChild(e)}
-const modal=$("manageModal");$("manageOpen").onclick=()=>{modal.hidden=false;$("manageLock").hidden=false;$("manageEditor").hidden=true;$("managePw").value="";$("manageErr").textContent="";setTimeout(()=>$("managePw").focus(),50)};
-$("manageClose").onclick=()=>modal.hidden=true;modal.onclick=e=>{if(e.target===modal)modal.hidden=true};$("managePw").onkeydown=e=>{if(e.key==="Enter")$("manageUnlock").click()};
-$("manageUnlock").onclick=()=>{if($("managePw").value==="1111"){$("manageLock").hidden=true;$("manageEditor").hidden=false;loadManage()}else{$("manageErr").textContent="管理密碼錯誤"}};
-async function loadManage(){try{const x=await readCloud();if(Array.isArray(x))songs=x;render();renderManage();$("manageStatus").textContent="已連線至雲端曲目資料"}catch{$("manageStatus").textContent="雲端讀取失敗"}}
-function renderManage(){$("manageList").innerHTML="";songs.forEach((s,i)=>{const d=document.createElement("div");d.className="manage-song";const info=document.createElement("span");info.innerHTML="<b></b><br><small></small>";info.querySelector("b").textContent=s.title;info.querySelector("small").textContent=s.youtube;const b=document.createElement("button");b.textContent="刪除";b.onclick=async()=>{songs.splice(i,1);await saveManage()};d.append(info,b);$("manageList").append(d)})}
-async function saveManage(){ $("manageStatus").textContent="正在同步雲端……";try{const r=await fetch(CLOUD_WRITE,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(songs)});const x=await r.json();if(!r.ok||!x.ok)throw new Error(x?.message||"SAVE_FAILED");const saved=await readCloud();if(!Array.isArray(saved))throw new Error("VERIFY_FAILED");songs=saved;render();renderManage();$("manageStatus").textContent="已儲存並從雲端驗證成功"}catch{$("manageStatus").textContent="儲存失敗，請檢查雲端 API"}}
-$("manageAdd").onclick=async()=>{if(!$("manageTitleInput").value.trim()||!$("manageUrlInput").value.trim())return alert("請填寫曲名與 YouTube 網址");songs.push({title:$("manageTitleInput").value.trim(),artist:$("manageArtistInput").value.trim(),youtube:$("manageUrlInput").value.trim()});await saveManage();$("manageTitleInput").value="";$("manageArtistInput").value="";$("manageUrlInput").value=""};
-$("manageReset").onclick=async()=>{songs=[...DEFAULT];await saveManage()};
-(async()=>{await load();current=songs.length?0:-1;render();if(current>=0){$("title").textContent=songs[0].title;$("artist").textContent=songs[0].artist||""}const x=document.createElement("script");x.src="https://www.youtube.com/iframe_api";document.head.appendChild(x)})();
+
+const eq=document.querySelector(".equalizer");
+for(let i=0;i<52;i++){
+  const e=document.createElement("span");
+  e.style.setProperty("--h",(20+Math.random()*115)+"px");
+  e.style.setProperty("--speed",(0.28+Math.random()*.58)+"s");
+  e.style.setProperty("--delay",(-Math.random()*1.2)+"s");
+  eq.appendChild(e);
+}
+const pf=document.querySelector("#particleField");
+for(let i=0;i<30;i++){
+  const e=document.createElement("i");
+  e.className="particle";
+  e.style.left=(8+Math.random()*84)+"%";
+  e.style.top=(45+Math.random()*45)+"%";
+  e.style.setProperty("--speed",(1.4+Math.random()*2)+"s");
+  e.style.setProperty("--delay",(-Math.random()*3)+"s");
+  pf.appendChild(e);
+}
+
+const modal=$("manageModal");
+$("manageOpen").onclick=()=>{
+  modal.hidden=false;
+  $("manageLock").hidden=false;
+  $("manageEditor").hidden=true;
+  $("managePw").value="";
+  $("manageErr").textContent="";
+  setTimeout(()=>$("managePw").focus(),50);
+};
+$("manageClose").onclick=()=>modal.hidden=true;
+modal.onclick=e=>{if(e.target===modal)modal.hidden=true};
+$("managePw").onkeydown=e=>{if(e.key==="Enter")$("manageUnlock").click()};
+$("manageUnlock").onclick=()=>{
+  if($("managePw").value==="1111"){
+    $("manageLock").hidden=true;
+    $("manageEditor").hidden=false;
+    loadManage();
+  }else{
+    $("manageErr").textContent="管理密碼錯誤";
+  }
+};
+async function loadManage(){
+  try{
+    const x=await readCloud();
+    if(Array.isArray(x))songs=x;
+    render();
+    renderManage();
+    $("manageStatus").textContent="已連線至雲端曲目資料";
+  }catch{
+    $("manageStatus").textContent="雲端讀取失敗";
+  }
+}
+function renderManage(){
+  $("manageList").innerHTML="";
+  songs.forEach((s,i)=>{
+    const d=document.createElement("div");
+    d.className="manage-song";
+    const info=document.createElement("span");
+    info.innerHTML="<b></b><br><small></small>";
+    info.querySelector("b").textContent=s.title;
+    info.querySelector("small").textContent=s.youtube;
+    const b=document.createElement("button");
+    b.textContent="刪除";
+    b.onclick=async()=>{
+      songs.splice(i,1);
+      await saveManage();
+    };
+    d.append(info,b);
+    $("manageList").append(d);
+  });
+}
+async function saveManage(){
+  $("manageStatus").textContent="正在同步雲端……";
+  try{
+    const r=await fetch(CLOUD_WRITE,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(songs)
+    });
+    const x=await r.json();
+    if(!r.ok||!x.ok)throw new Error(x?.message||"SAVE_FAILED");
+    const saved=await readCloud();
+    if(!Array.isArray(saved))throw new Error("VERIFY_FAILED");
+    songs=saved;
+    render();
+    renderManage();
+    $("manageStatus").textContent="已儲存並從雲端驗證成功";
+  }catch{
+    $("manageStatus").textContent="儲存失敗，請檢查雲端 API";
+  }
+}
+$("manageAdd").onclick=async()=>{
+  if(!$("manageTitleInput").value.trim()||!$("manageUrlInput").value.trim()){
+    return alert("請填寫曲名與 YouTube 網址");
+  }
+  songs.push({
+    title:$("manageTitleInput").value.trim(),
+    artist:$("manageArtistInput").value.trim(),
+    youtube:$("manageUrlInput").value.trim()
+  });
+  await saveManage();
+  $("manageTitleInput").value="";
+  $("manageArtistInput").value="";
+  $("manageUrlInput").value="";
+};
+$("manageReset").onclick=async()=>{
+  songs=[...DEFAULT];
+  await saveManage();
+};
+(async()=>{
+  await load();
+  current=songs.length?0:-1;
+  render();
+  if(current>=0){
+    $("title").textContent=songs[0].title;
+    $("artist").textContent=songs[0].artist||"";
+  }
+  const x=document.createElement("script");
+  x.src="https://www.youtube.com/iframe_api";
+  document.head.appendChild(x);
+})();
