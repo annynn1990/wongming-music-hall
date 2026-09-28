@@ -52,7 +52,7 @@ header{display:flex;justify-content:flex-start;align-items:flex-start;padding:2p
 @keyframes songCrawl{
   0%{transform:rotateX(22deg) translateY(var(--crawl-start,52vh))}
   96%{transform:rotateX(22deg) translateY(var(--crawl-end,-120%))}
-  100%{transform:rotateX(22deg) translateY(var(--crawl-end,-120%)) scale(.92)}
+  100%{transform:rotateX(22deg) translateY(var(--crawl-end,-120%))}
 }
 
 footer{padding:5px 0;color:#f5eadc77;font-size:9px;text-align:right}
