@@ -54,6 +54,7 @@ header{display:flex;justify-content:flex-start;align-items:flex-start;padding:2p
 .song-crawl.is-paused .song-crawl-inner{animation-play-state:paused}
 @keyframes songCrawl{
   0%{transform:rotateX(22deg) translateY(var(--crawl-start,52vh)) scale(1.08)}
+  96%{transform:rotateX(22deg) translateY(var(--crawl-end,-120%)) scale(.92)}
   100%{transform:rotateX(22deg) translateY(var(--crawl-end,-120%)) scale(.92)}
 }
 
