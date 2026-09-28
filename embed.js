@@ -133,7 +133,8 @@
     if(!event.data||event.data.type!=='wongming-royal-music-hall')return;
 
     if(event.data.state==='playing')updateMusicButton('playing');
-    if(event.data.state==='paused'||event.data.state==='stopped')updateMusicButton('paused');
+    if(event.data.state==='paused'||event.data.state==='stopped'||event.data.state==='ready')updateMusicButton('paused');
+    if(event.data.state==='ready'&&opened)sendControl('play');
   });
 
   frame.appendChild(iframe);
